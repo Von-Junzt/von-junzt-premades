@@ -2,11 +2,6 @@ if (args[0].macroPass === 'preTargetSave') {
 
     if (!macroItem.flags.homebrew.effectAvailable && !workflow.item.name.toLowerCase().includes('breath')) return;
 
-    async function rechargeItem() {
-        await macroItem.update({"flags.homebrew" : { "effectAvailable" : true}});
-        game.critsRevisited.helperFunctions.createChatMessage(game.users.activeGM, "Wyrmbane has been recharged.");
-    }
-
     let effectData = [{
         "name": "Wyrm's Ward",
         "icon": "icons/skills/melee/shield-block-fire-orange.webp",
