@@ -1,6 +1,6 @@
 {
-  "id": "aushilfsalien-premades",
-  "title": "Aushi's Premades",
+  "id": "von-junzt-premades",
+  "title": "Von Junzt's Premades",
   "version": "1.0.0",
   "compatibility": {
     "minimum": "12",
@@ -9,7 +9,7 @@
   "description": "A collection of premade content and homebrew items for Foundry VTT",
   "authors": [
     {
-      "name": "Aushilfsalien",
+      "name": "Von Junzt",
       "discord": "von_junzt",
       "flags": {}
     }
@@ -21,21 +21,9 @@
   "changelog": "",
   "packs": [
     {
-      "name": "aushilfsalien-premades-items",
+      "name": "von-junzt-premades-items",
       "label": "Items",
-      "path": "packs/aushilfsalien-premades-items",
-      "type": "Items",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
-      "system": "dnd5e",
-      "flags": {}
-    },
-    {
-      "name": "aushilfsalien-premades-macros",
-      "label": "Macros",
-      "path": "packs/aushilfsalien-premades-macros",
+      "path": "packs/von-junzt-premades-items",
       "type": "Item",
       "ownership": {
         "PLAYER": "OBSERVER",
@@ -45,9 +33,21 @@
       "flags": {}
     },
     {
-      "name": "critical-hits-actors",
+      "name": "von-junzt-premades-macros",
+      "label": "Macros",
+      "path": "packs/von-junzt-premades-macros",
+      "type": "Macro",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "system": "dnd5e",
+      "flags": {}
+    },
+    {
+      "name": "von-junzt-premades-actors",
       "label": "Actors",
-      "path": "packs/ausalien-premades-actors",
+      "path": "packs/von-junzt-premades-actors",
       "type": "Actor",
       "ownership": {
         "PLAYER": "OBSERVER",
@@ -59,17 +59,17 @@
   ],
   "packFolders": [
     {
-      "name": "Aushilfsalien Premades",
+      "name": "Von Junzt's Premades",
       "sorting": "m",
       "color": "#3f8230",
       "packs": [
-        "aushilfsalien-premades-items",
-        "aushilfsalien-premades-macros",
-        "critical-hits-actors"
+        "von-junzt-premades-items",
+        "von-junzt-premades-macros",
+        "von-junzt-premades-actors"
       ]
     }
   ],
   "esmodules": [
-    "scripts/main.js"
+    "main.js"
   ]
 }
