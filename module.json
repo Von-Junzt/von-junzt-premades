@@ -1,0 +1,75 @@
+{
+  "id": "aushilfsalien-premades",
+  "title": "Aushi's Premades",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "12"
+  },
+  "description": "A collection of premade content and homebrew items for Foundry VTT",
+  "authors": [
+    {
+      "name": "Aushilfsalien",
+      "discord": "von_junzt",
+      "flags": {}
+    }
+  ],
+  "url": "https://github.com/aushilfsalien/aushilfsalien-premades",
+  "manifest": "",
+  "download": "",
+  "readme": "",
+  "changelog": "",
+  "packs": [
+    {
+      "name": "aushilfsalien-premades-items",
+      "label": "Items",
+      "path": "packs/aushilfsalien-premades-items",
+      "type": "Items",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "system": "dnd5e",
+      "flags": {}
+    },
+    {
+      "name": "aushilfsalien-premades-macros",
+      "label": "Macros",
+      "path": "packs/aushilfsalien-premades-macros",
+      "type": "Item",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "system": "dnd5e",
+      "flags": {}
+    },
+    {
+      "name": "critical-hits-actors",
+      "label": "Actors",
+      "path": "packs/ausalien-premades-actors",
+      "type": "Actor",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "system": "dnd5e",
+      "flags": {}
+    }
+  ],
+  "packFolders": [
+    {
+      "name": "Aushilfsalien Premades",
+      "sorting": "m",
+      "color": "#3f8230",
+      "packs": [
+        "aushilfsalien-premades-items",
+        "aushilfsalien-premades-macros",
+        "critical-hits-actors"
+      ]
+    }
+  ],
+  "esmodules": [
+    "scripts/main.js"
+  ]
+}
