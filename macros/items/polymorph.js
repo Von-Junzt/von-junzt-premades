@@ -1,8 +1,14 @@
+/**
+ * This macro is used to polymorph a creature it should be used in the polymorph spell/item effectmacro "After Checking Saves"
+ * Dependencies aside from Midi-QoL are: Ripper93's Portal lib, Cauldron of Plentiful Ressources
+ */
+
 if (args[0].macroPass === "postSave") {
     if(!workflow.failedSaves.size) {
         return false;
     }
 
+    // Change name to match your folder name, if you want to use a different folder
     const polymorphFolder = game.folders.getName("Polymorphs");
     if (!polymorphFolder?.contents.length) {
         ui.notifications.warn("Please create a 'Polymorphs' folder with creature actors");
