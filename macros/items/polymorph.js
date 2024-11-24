@@ -43,6 +43,7 @@ if (args[0].macroPass === "postSave") {
     portal.addCreature(selectedForm);
     await portal.transform();
 
+    // TODO: Add sequencer animation: Smokepuff and sound effect when adding or removing polymorph effect
     const effectData = {
         "name": "Polymorphed",
         "icon": "icons/magic/control/energy-stream-link-spiral-teal.webp",
