@@ -2,6 +2,7 @@ if (args[0].macroPass === "postSave") {
     if(!workflow.failedSaves.size) {
         return false;
     }
+
     const polymorphFolder = game.folders.getName("Polymorphs");
     if (!polymorphFolder?.contents.length) {
         ui.notifications.warn("Please create a 'Polymorphs' folder with creature actors");
@@ -9,7 +10,6 @@ if (args[0].macroPass === "postSave") {
     }
 
     const polymorphTarget = Array.from(workflow.targets).shift();
-    console.log(polymorphTarget);
     if (!polymorphTarget) {
         ui.notifications.warn("No target selected");
         return false;
@@ -21,29 +21,15 @@ if (args[0].macroPass === "postSave") {
     }
 
     const maxCR = args[0].spellLevel || args[0].item.system.level;
-
     const validForms = polymorphFolder.contents.filter(actor => actor.system.details.cr <= maxCR);
+
     if (!validForms.length) {
         ui.notifications.warn("No valid forms found");
         return false;
     }
 
-    const formChoices = validForms.map(a => [a.id, a.name]);
-    const selectedFormId = await Dialog.prompt({
-        title: "Select New Form",
-        content: `
-            <div class="form-group">
-                <select id="form-select">
-                    ${formChoices.map(([id, name]) => `<option value="${id}">${name}</option>`).join('')}
-                </select>
-            </div>
-        `,
-        callback: (html) => html.find('#form-select').val()
-    });
-    if (!selectedFormId) {
-        return false;
-    }
-    const selectedForm = validForms.find(a => a.id === selectedFormId);
+    const selectedForm = await chrisPremades.utils.dialogUtils.selectDocumentDialog(workflow.item.name, 'Select Polymorph Form', validForms);
+    if (!selectedForm) return false;
 
     portal = new Portal();
     portal.size(60);
@@ -59,7 +45,9 @@ if (args[0].macroPass === "postSave") {
         },
         "flags": {
             "effectmacro": {
-                "onDelete": "if(actor.isPolymorphed) {ui.notifications.warn('Reverting Polymorph'); actor.revertOriginalForm({renderSheet: true})};",
+                "onDelete": {
+                    "script": `ui.notifications.warn('Reverting Polymorph'); actor.revertOriginalForm({renderSheet: true});`
+                }
             }
         }
     };
