@@ -35,7 +35,10 @@ if (args[0].macroPass === "postSave") {
     }
 
     const selectedForm = await chrisPremades.utils.dialogUtils.selectDocumentDialog(workflow.item.name, 'Select Polymorph Form', validForms);
-    if (!selectedForm) return false;
+    if (!selectedForm) {
+        ui.notifications.warn("No form selected");
+        return false;
+    }
 
     portal = new Portal();
     portal.size(60);
