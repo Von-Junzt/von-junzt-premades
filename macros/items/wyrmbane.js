@@ -1,6 +1,6 @@
 if (args[0].macroPass === 'preTargetSave') {
 
-    if (!macroItem.flags.homebrew.effectAvailable && !workflow.item.name.toLowerCase().includes('breath')) return;
+    if (!macroItem.flags.homebrew.effectAvailable || !workflow.item.name.toLowerCase().includes('breath')) return;
 
     let effectData = [{
         "name": "Wyrm's Ward",

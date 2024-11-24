@@ -9,7 +9,6 @@ async function rechargeWyrmbane() {
             playerItems.push(...wyrmbane);
         }
     });
-
     // If Wyrmbane is found and has been used, recharge it and create a chat message
     if (playerItems.length > 0) {
         for (let wyrmbane of playerItems) {
@@ -24,5 +23,5 @@ async function rechargeWyrmbane() {
         }
     }
 }
-
+// set up a hook to listen for the rest event
 Hooks.on("dnd5e.restCompleted", rechargeWyrmbane);
