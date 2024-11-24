@@ -1,17 +1,23 @@
 if (args[0].macroPass === "postSave") {
     if(!workflow.failedSaves.size) {
-        return;
+        return false;
     }
     const polymorphFolder = game.folders.getName("Polymorphs");
     if (!polymorphFolder?.contents.length) {
         ui.notifications.warn("Please create a 'Polymorphs' folder with creature actors");
-        return;
+        return false;
     }
 
     const polymorphTarget = Array.from(workflow.targets).shift();
+    console.log(polymorphTarget);
     if (!polymorphTarget) {
         ui.notifications.warn("No target selected");
-        return;
+        return false;
+    }
+
+    if (polymorphTarget.actor.system.details.type.subtype === 'Shapechanger' || polymorphTarget.actor.system.attributes.hp.value === 0) {
+        ui.notifications.warn("Target is already polymorphed, a shapeshifter or dead");
+        return false;
     }
 
     const maxCR = args[0].spellLevel || args[0].item.system.level;
@@ -19,7 +25,7 @@ if (args[0].macroPass === "postSave") {
     const validForms = polymorphFolder.contents.filter(actor => actor.system.details.cr <= maxCR);
     if (!validForms.length) {
         ui.notifications.warn("No valid forms found");
-        return;
+        return false;
     }
 
     const formChoices = validForms.map(a => [a.id, a.name]);
@@ -34,8 +40,9 @@ if (args[0].macroPass === "postSave") {
         `,
         callback: (html) => html.find('#form-select').val()
     });
-    if (!selectedFormId) return;
-
+    if (!selectedFormId) {
+        return false;
+    }
     const selectedForm = validForms.find(a => a.id === selectedFormId);
 
     portal = new Portal();
@@ -44,26 +51,18 @@ if (args[0].macroPass === "postSave") {
     portal.addCreature(selectedForm);
     await portal.transform();
 
-    const effect = {
-        label: "Polymorph",
-        icon: "icons/magic/control/energy-stream-link-spiral-teal.webp",
-        duration: {
-            seconds: 3600
+    const effectData = {
+        "name": "Polymorph",
+        "icon": "icons/magic/control/energy-stream-link-spiral-teal.webp",
+        "duration": {
+            "seconds": 3600
         },
-        flags: {
-            "midi-qol": {
-                polymorphed: true
-            },
-            "dae": {
-                specialDuration: ["turnEndSource"],
-                macroRepeat: "end",
-                macro: [{
-                    ondelete: "token.actor.revertOriginalForm({renderSheet: true});", //TODO CHECK IF THIS WORKS
-                    name: "Revert Polymorph"
-                }]
+        "flags": {
+            "effectmacro": {
+                "onDelete": "if(actor.isPolymorphed) {ui.notifications.warn('Reverting Polymorph'); actor.revertOriginalForm({renderSheet: true})};",
             }
         }
     };
 
-    await MidiQOL.socket().executeAsGM("createEffects", { actorUuid: polymorphTarget.uuid, effects: [effect]});
+    await MidiQOL.socket().executeAsGM("createEffects", {actorUuid: polymorphTarget.actor.uuid, effects: [effectData]});
 }
