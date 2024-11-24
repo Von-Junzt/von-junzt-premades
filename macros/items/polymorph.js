@@ -46,7 +46,7 @@ if (args[0].macroPass === "postSave") {
         "flags": {
             "effectmacro": {
                 "onDelete": {
-                    "script": `ui.notifications.warn('Reverting Polymorph'); actor.revertOriginalForm({renderSheet: true});`
+                    "script": `ui.notifications.warn('Reverting Polymorph'); portal = new Portal(); portal.origin(actor.token); portal.transform();`
                 }
             }
         }
