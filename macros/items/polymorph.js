@@ -1,6 +1,6 @@
 /**
  * This macro is used to polymorph a creature it should be used in the polymorph spell/item effectmacro "After Checking Saves"
- * Dependencies aside from Midi-QoL are: Ripper93's Portal lib, Cauldron of Plentiful Ressources
+ * Dependencies aside from Midi-QoL: Ripper93's Portal lib, Cauldron of Plentiful Ressources
  */
 
 if (args[0].macroPass === "postSave") {
@@ -11,18 +11,18 @@ if (args[0].macroPass === "postSave") {
     // Change name to match your folder name, if you want to use a different folder
     const polymorphFolder = game.folders.getName("Polymorphs");
     if (!polymorphFolder?.contents.length) {
-        ui.notifications.warn("Please create a 'Polymorphs' folder with creature actors");
+        ui.notifications.warn("Please create a 'Polymorphs' folder with creature actors.");
         return false;
     }
 
     const polymorphTarget = Array.from(workflow.targets).shift();
     if (!polymorphTarget) {
-        ui.notifications.warn("No target selected");
+        ui.notifications.warn("No target selected.");
         return false;
     }
 
     if (polymorphTarget.actor.system.details.type.subtype === 'Shapechanger' || polymorphTarget.actor.system.attributes.hp.value === 0) {
-        ui.notifications.warn("Target is already polymorphed, a shapeshifter or dead");
+        ui.notifications.warn("Target is already polymorphed, shapeshifter or dead.");
         return false;
     }
 
@@ -30,13 +30,13 @@ if (args[0].macroPass === "postSave") {
     const validForms = polymorphFolder.contents.filter(actor => actor.system.details.cr <= maxCR);
 
     if (!validForms.length) {
-        ui.notifications.warn("No valid forms found");
+        ui.notifications.warn("No valid forms found.");
         return false;
     }
 
     const selectedForm = await chrisPremades.utils.dialogUtils.selectDocumentDialog(workflow.item.name, 'Select Polymorph Form', validForms);
     if (!selectedForm) {
-        ui.notifications.warn("No form selected");
+        ui.notifications.warn("No form selected.");
         return false;
     }
 
@@ -44,12 +44,11 @@ if (args[0].macroPass === "postSave") {
     portal.size(60);
     portal.origin(polymorphTarget);
     portal.addCreature(selectedForm);
-    await portal.transform();
+    await portal.transform({ skipSheetRender: true });
 
-    // TODO: Add sequencer animation: Smokepuff and sound effect when adding or removing polymorph effect
     const effectData = {
         "name": "Polymorphed",
-        "icon": "icons/magic/control/energy-stream-link-spiral-teal.webp",
+        "icon": "icons/creatures/abilities/dragon-breath-purple.webp",
         "description": "<p>The target creature is polymorphed into another form. The transformation lasts for the duration," +
             " or until the target drops to 0 hit points or dies.</br></br> The target assumes the hit points of its new form. When it" +
             " reverts to its normal form, the creature returns to the number of hit points it had before it transformed. If it" +
@@ -63,7 +62,7 @@ if (args[0].macroPass === "postSave") {
         "flags": {
             "effectmacro": {
                 "onDelete": {
-                    "script": `ui.notifications.warn('Reverting Polymorph'); portal = new Portal(); portal.origin(actor.token); portal.transform();`
+                    "script": `portal = new Portal(); portal.origin(actor.token); portal.transform({ skipSheetRender: true });`
                 }
             }
         }
