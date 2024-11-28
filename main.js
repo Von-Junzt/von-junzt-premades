@@ -24,16 +24,31 @@ async function rechargeWyrmbane() {
     }
 }
 
+// TODO Maybe add stealth bonus to this
 const effectData = {
     "name": "Ducking",
     "transfer": false,
+    "changes": [
+        {
+            "key": "system.skills.ste.bonuses.check",
+            "mode": 2,
+            "value": "+2",
+            "priority": 20
+        },
+        {
+            "key": "system.attributes.movement.walk",
+            "mode": 1,
+            "value": "0.5",
+            "priority": 20
+        }
+    ],
     "flags": {
         "dae": {
             "showIcon": true,
         }
     },
     "img": "modules/levelsautocover/icons/ducking.png",
-    "description": "<p>The token is ducking an potentially taking cover.</p>"
+    "description": "<p>The creature ducks down. While crouching, the creature gains +1 to Stealth checks, but halves its movement speed.</p>"
 }
 
 async function toggleDucking(tokenDocument) {
@@ -56,6 +71,5 @@ async function toggleDucking(tokenDocument) {
 // set up a hook to listen for token ducking
 Hooks.on("updateToken", toggleDucking);
 
-// NOT NEEDED ATM
-// set up a hook to listen for the rest event
+// NOT NEEDED ATM: set up a hook to listen for the rest event
 // Hooks.on("dnd5e.restCompleted", rechargeWyrmbane);
