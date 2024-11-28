@@ -24,7 +24,6 @@ async function rechargeWyrmbane() {
     }
 }
 
-// TODO Maybe add stealth bonus to this
 const effectData = {
     "name": "Ducking",
     "transfer": false,
@@ -51,7 +50,7 @@ const effectData = {
     "description": "<p>The creature ducks down. While crouching, the creature gains +1 to Stealth checks, but halves its movement speed.</p>"
 }
 
-async function toggleDucking(tokenDocument) {
+async function toggleDuckingEffect(tokenDocument) {
     console.log("Ducking toggled");
     const token = canvas.tokens.get(tokenDocument.id);
 
@@ -69,7 +68,7 @@ async function toggleDucking(tokenDocument) {
 }
 
 // set up a hook to listen for token ducking
-Hooks.on("updateToken", toggleDucking);
+Hooks.on("updateToken", toggleDuckingEffect);
 
 // NOT NEEDED ATM: set up a hook to listen for the rest event
 // Hooks.on("dnd5e.restCompleted", rechargeWyrmbane);
