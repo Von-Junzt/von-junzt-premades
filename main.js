@@ -23,5 +23,39 @@ async function rechargeWyrmbane() {
         }
     }
 }
+
+const effectData = {
+    "name": "Ducking",
+    "transfer": false,
+    "flags": {
+        "dae": {
+            "showIcon": true,
+        }
+    },
+    "img": "modules/levelsautocover/icons/ducking.png",
+    "description": "<p>The token is ducking an potentially taking cover.</p>"
+}
+
+async function toggleDucking(tokenDocument) {
+    console.log("Ducking toggled");
+    const token = canvas.tokens.get(tokenDocument.id);
+
+    // Only proceed if this is the gm
+    if (!game.user.isGM) return;
+
+    const existingEffect = token.actor.effects.find(e => e.name === "Ducking");
+    if (token.document.flags.levelsautocover.ducking) {
+        if (!existingEffect) {
+            await MidiQOL.socket().executeAsGM("createEffects", {actorUuid: token.actor.uuid, effects: [effectData]});
+        }
+    } else {
+        await MidiQOL.socket().executeAsGM("removeEffects", {actorUuid: token.actor.uuid, effects: [existingEffect.id]});
+    }
+}
+
+// set up a hook to listen for token ducking
+Hooks.on("updateToken", toggleDucking);
+
+// NOT NEEDED ATM
 // set up a hook to listen for the rest event
-Hooks.on("dnd5e.restCompleted", rechargeWyrmbane);
+// Hooks.on("dnd5e.restCompleted", rechargeWyrmbane);
