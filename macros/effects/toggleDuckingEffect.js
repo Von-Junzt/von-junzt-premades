@@ -4,7 +4,9 @@
  * you can define your own ducking effect keys.
  */
 
-// Define effect data once at module level
+
+// TODO: Add check if the CPR effect storage already has a ducking effect stored. If yes, use the CPR sidebar effect
+// by getting the effectdata with the CPR function
 const DUCKING_EFFECT = {
     name: "Ducked",
     transfer: false,
