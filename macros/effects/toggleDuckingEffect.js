@@ -4,11 +4,9 @@
  * you can define your own ducking effect keys.
  */
 
-
-// TODO: Add check if the CPR effect storage already has a ducking effect stored. If yes, use the CPR sidebar effect
-// by getting the effectdata with the CPR function
+// use CPR Sidebar effects if they exist, otherwise fallback to the default ducking effect
 const DUCKING_EFFECT = {
-    name: "Ducked",
+    name: "Ducking",
     transfer: false,
     changes: [
         {
@@ -39,21 +37,32 @@ export async function toggleDuckingEffect(tokenDocument) {
     
     // get token and see if effect is allready applied
     const token = canvas.tokens.get(tokenDocument.id);
-    const existingEffect = token.actor.effects.find(e => e.name === "Ducked");
+    const existingEffect = token.actor.effects.find(e => e.name === "Ducking");
+
+    // First try to get effect from CPR sidebar
+    let effectData = chrisPremades.utils.effectUtils.getSidebarEffectData("Ducking");
+
+    // If no CPR effect found, use the default DUCKING_EFFECT
+    if (!effectData) {
+        effectData = DUCKING_EFFECT;
+    }
     
     // check if token is ducking, if yes, add effect if not existing already
-    if (token.document.flags.levelsautocover.ducking) {
-        if (!existingEffect) { 
+    if()
+    if (token.document.flags?.levelsautocover.ducking) {
+        if (!existingEffect) {
             await MidiQOL.socket().executeAsGM("createEffects", {
-                actorUuid: token.actor.uuid, 
-                effects: [DUCKING_EFFECT]
+                actorUuid: token.actor.uuid,
+                effects: [effectData]
             });
         }
     } else {
         // if token is not ducking, remove effect
-        await MidiQOL.socket().executeAsGM("removeEffects", {
-            actorUuid: token.actor.uuid, 
-            effects: [existingEffect.id]
-        });
+        if(existingEffect) {
+            await MidiQOL.socket().executeAsGM("removeEffects", {
+                actorUuid: token.actor.uuid,
+                effects: [existingEffect.id]
+            });
+        }
     }
 }
