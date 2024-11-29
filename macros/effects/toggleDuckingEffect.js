@@ -43,7 +43,7 @@ export async function toggleDuckingEffect(tokenDocument) {
     let effectData = chrisPremades.utils.effectUtils.getSidebarEffectData("Ducking") || DUCKING_EFFECT;
 
     // check if token is ducking, if yes, add effect if not existing already
-    if (token.document.flags?.levelsautocover.ducking) {
+    if (token.document.flags?.levelsautocover?.ducking) {
         if (!existingEffect) {
             await MidiQOL.socket().executeAsGM("createEffects", {
                 actorUuid: token.actor.uuid,
