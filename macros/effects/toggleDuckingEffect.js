@@ -40,13 +40,8 @@ export async function toggleDuckingEffect(tokenDocument) {
     const existingEffect = token.actor.effects.find(e => e.name === "Ducking");
 
     // First try to get effect from CPR sidebar
-    let effectData = chrisPremades.utils.effectUtils.getSidebarEffectData("Ducking");
+    let effectData = chrisPremades.utils.effectUtils.getSidebarEffectData("Ducking") || DUCKING_EFFECT;
 
-    // If no CPR effect found, use the default DUCKING_EFFECT
-    if (!effectData) {
-        effectData = DUCKING_EFFECT;
-    }
-    
     // check if token is ducking, if yes, add effect if not existing already
     if (token.document.flags?.levelsautocover.ducking) {
         if (!existingEffect) {
