@@ -6,7 +6,7 @@
 
 // Define effect data once at module level
 const DUCKING_EFFECT = {
-    name: "Ducking",
+    name: "Ducked",
     transfer: false,
     changes: [
         {
@@ -37,7 +37,7 @@ export async function toggleDuckingEffect(tokenDocument) {
     
     // get token and see if effect is allready applied
     const token = canvas.tokens.get(tokenDocument.id);
-    const existingEffect = token.actor.effects.find(e => e.name === "Ducking");
+    const existingEffect = token.actor.effects.find(e => e.name === "Ducked");
     
     // check if token is ducking, if yes, add effect if not existing already
     if (token.document.flags.levelsautocover.ducking) {
