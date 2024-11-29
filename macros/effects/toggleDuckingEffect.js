@@ -1,3 +1,9 @@
+/**
+ * This script is called by main.js everytime a token is updated. Preferably through the Levels Autocover UI.
+ * It checks for the levelsautocover.ducking flag and applied a predefined effect accordingly. I should maybe
+ * add a check for CPR sidebar effects so you can define your own ducking effect keys.
+ */
+
 // Define effect data once at module level
 const DUCKING_EFFECT = {
     name: "Ducking",
