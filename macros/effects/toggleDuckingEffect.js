@@ -48,7 +48,6 @@ export async function toggleDuckingEffect(tokenDocument) {
     }
     
     // check if token is ducking, if yes, add effect if not existing already
-    if()
     if (token.document.flags?.levelsautocover.ducking) {
         if (!existingEffect) {
             await MidiQOL.socket().executeAsGM("createEffects", {
