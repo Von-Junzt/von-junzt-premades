@@ -1,7 +1,7 @@
 /**
  * This macro is used to polymorph a creature. It should be used in the polymorph spell/items Midi-QoL itemmacro settings
  * "After Checking Saves".
- * Dependencies aside from Midi-QoL: Ripper93's Portal lib, Cauldron of Plentiful Resources
+ * Dependencies aside from Midi-QoL: Ripper93's Portal lib, Cauldron of Plentiful Resources, Effect Macro
  */
 
 if (args[0].macroPass === "postSave") {
@@ -10,9 +10,9 @@ if (args[0].macroPass === "postSave") {
     }
 
     // Change name to match your folder name, if you want to use a different folder
-    const polymorphFolder = game.folders.getName("Polymorphs");
+    const polymorphFolder = game.folders.getName("Polymorph");
     if (!polymorphFolder?.contents.length) {
-        ui.notifications.warn("Please create a 'Polymorphs' folder with creature actors.");
+        ui.notifications.warn("Please create a 'Polymorph' folder with creature actors.");
         return;
     }
 
@@ -24,7 +24,7 @@ if (args[0].macroPass === "postSave") {
 
     if (polymorphTarget.actor.system.details.type.subtype === 'Shapechanger' || polymorphTarget.actor.system.attributes.hp.value === 0) {
         ui.notifications.warn("Target is already polymorphed, shapeshifter or dead.");
-        return ;
+        return;
     }
 
     const maxCR = args[0].spellLevel || args[0].item.system.level;
@@ -35,14 +35,14 @@ if (args[0].macroPass === "postSave") {
         return;
     }
 
-    const selectedForm = await chrisPremades.utils.dialogUtils.selectDocumentDialog(workflow.item.name, 'Select Polymorph Form', validForms);
+    const selectedForm = await chrisPremades.utils.dialogUtils.selectDocumentDialog(item.name, 'Select Polymorph Form', validForms);
     if (!selectedForm) {
         ui.notifications.warn("No form selected.");
         return;
     }
 
     portal = new Portal();
-    portal.size(60);
+    portal.size(item.system?.range?.value || 60);
     portal.origin(polymorphTarget);
     portal.addCreature(selectedForm);
     await portal.transform({ skipSheetRender: true });
@@ -63,5 +63,8 @@ if (args[0].macroPass === "postSave") {
         }
     };
 
-    await MidiQOL.socket().executeAsGM("createEffects", {actorUuid: polymorphTarget.actor.uuid, effects: [effectData]});
+    await MidiQOL.socket().executeAsGM("createEffects", {
+        actorUuid: polymorphTarget.actor.uuid,
+        effects: [effectData]
+    });
 }
