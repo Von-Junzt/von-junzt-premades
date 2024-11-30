@@ -4,7 +4,7 @@
  * you can define your own ducking effect keys.
  */
 
-// use CPR Sidebar effects if they exist, otherwise fallback to the default ducking effect
+// default ducking effect
 const DUCKING_EFFECT = {
     name: "Ducking",
     transfer: false,
@@ -26,7 +26,7 @@ export async function toggleDuckingEffect(tokenDocument) {
     const token = canvas.tokens.get(tokenDocument.id);
     const existingEffect = token.actor.effects.find(e => e.name === "Ducking");
 
-    // First try to get effect from CPR sidebar
+    // use CPR Sidebar effect if it exists, otherwise fallback to the default effect
     let effectData = chrisPremades.utils.effectUtils.getSidebarEffectData("Ducking") || DUCKING_EFFECT;
 
     // check if token is ducking, if yes, add effect if not existing already
