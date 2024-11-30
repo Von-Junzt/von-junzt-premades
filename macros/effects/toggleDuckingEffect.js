@@ -8,27 +8,14 @@
 const DUCKING_EFFECT = {
     name: "Ducking",
     transfer: false,
-    changes: [
-        {
-            key: "system.skills.ste.bonuses.check",
-            mode: 2,
-            value: "+2",
-            priority: 20
-        },
-        {
-            key: "system.attributes.movement.walk",
-            mode: 1,
-            value: "0.5",
-            priority: 20
-        }
-    ],
+    changes: [],
     flags: {
         dae: {
             showIcon: true,
         }
     },
     img: "modules/levelsautocover/icons/ducking.png",
-    description: "<p>The creature ducks down. While crouching, the creature gains +2 to Stealth checks, but halves its movement speed.</p>"
+    description: "<p>The creature ducks down.</p>"
 };
 
 export async function toggleDuckingEffect(tokenDocument) {
@@ -51,7 +38,7 @@ export async function toggleDuckingEffect(tokenDocument) {
             });
         }
     } else {
-        // if token is not ducking, remove effect
+        // if token is not ducking, remove effect if present
         if(existingEffect) {
             await MidiQOL.socket().executeAsGM("removeEffects", {
                 actorUuid: token.actor.uuid,
