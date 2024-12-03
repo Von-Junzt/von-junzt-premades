@@ -24,14 +24,22 @@ export async function toggleDuckingEffect(tokenDocument) {
     
     // get token and see if effect is allready applied
     const token = canvas.tokens.get(tokenDocument.id);
-    const existingEffect = token.actor.effects.find(e => e.name === "Ducking");
+    const existingProneEffect = token.actor.effects.find(e => e.name === "Prone");
+    const existingDuckingEffect = token.actor.effects.find(e => e.name === "Ducking");
 
     // use CPR Sidebar effect if it exists, otherwise fallback to the default effect
     let effectData = chrisPremades.utils.effectUtils.getSidebarEffectData("Ducking") || DUCKING_EFFECT;
 
     // check if token is ducking, if yes, add effect if not existing already
     if (token.document.flags?.levelsautocover?.ducking) {
-        if (!existingEffect) {
+        // if token was prone before, remove prone effect
+        if (existingProneEffect) {
+            await MidiQOL.socket().executeAsGM("removeEffects", {
+                actorUuid: token.actor.uuid,
+                effects: [existingProneEffect.id]
+            });
+        }
+        if (!existingDuckingEffect) {
             await MidiQOL.socket().executeAsGM("createEffects", {
                 actorUuid: token.actor.uuid,
                 effects: [effectData]
@@ -39,10 +47,10 @@ export async function toggleDuckingEffect(tokenDocument) {
         }
     } else {
         // if token is not ducking, remove effect if present
-        if(existingEffect) {
+        if(existingDuckingEffect) {
             await MidiQOL.socket().executeAsGM("removeEffects", {
                 actorUuid: token.actor.uuid,
-                effects: [existingEffect.id]
+                effects: [existingDuckingEffect.id]
             });
         }
     }
