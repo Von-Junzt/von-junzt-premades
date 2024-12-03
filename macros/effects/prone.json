@@ -1,0 +1,88 @@
+{
+  "name": "Prone",
+  "img": "modules/chris-premades/images/prone.svg",
+  "statuses": [
+    "prone"
+  ],
+  "description": "<p>@Embed[Compendium.dnd5e.rules.JournalEntry.w7eitkpD7QQTB6j0.JournalEntryPage.y0TkcdyoZlOTmAFT inline]</p>",
+  "type": "base",
+  "system": {},
+  "changes": [
+    {
+      "key": "system.attributes.movement.walk",
+      "mode": 1,
+      "value": "0.5",
+      "priority": 20
+    }
+  ],
+  "disabled": false,
+  "duration": {
+    "startTime": null,
+    "seconds": null,
+    "combat": null,
+    "rounds": null,
+    "turns": null,
+    "startRound": null,
+    "startTurn": null
+  },
+  "tint": "#ffffff",
+  "transfer": true,
+  "flags": {
+    "chris-premades": {
+      "effectInterface": {
+        "status": "prone"
+      }
+    },
+    "dae": {
+      "disableCondition": "",
+      "disableIncapacitated": false,
+      "stackable": "multi",
+      "showIcon": false,
+      "durationExpression": "",
+      "macroRepeat": "none",
+      "specialDuration": []
+    },
+    "core": {
+      "overlay": false
+    },
+    "ActiveAuras": {
+      "isAura": false,
+      "aura": "None",
+      "nameOverride": "",
+      "radius": "",
+      "alignment": "",
+      "type": "",
+      "customCheck": "",
+      "ignoreSelf": false,
+      "height": false,
+      "hidden": false,
+      "displayTemp": false,
+      "hostile": false,
+      "onlyOnce": false,
+      "wallsBlock": "system"
+    },
+    "effectmacro": {
+      "onCreate": {
+        "script": "// onCreation\nif(token.document.flags?.levelsautocover?.ducking) {\n    await token.document.update({\"flags.levelsautocover.ducking\": false});\n}\nif (token.document?.flags[\"wall-height\"]?.tokenHeight) {\n    await token.document.update({\"flags.storedTokenHeight\": token.document.flags[\"wall-height\"].tokenHeight});\n}\nawait token.setVerticalHeight(1);"
+      },
+      "onDelete": {
+        "script": "\n// onDeletion\nconst storedHeight = token.document.flags.storedTokenHeight;\nif (storedHeight) {\n    await token.setVerticalHeight(storedHeight);\n}\n"
+      }
+    },
+    "exportSource": {
+      "world": "die-vergessenen-reiche-reworked",
+      "system": "dnd5e",
+      "coreVersion": "12.331",
+      "systemVersion": "3.3.1"
+    }
+  },
+  "_stats": {
+    "coreVersion": "12.331",
+    "systemId": "dnd5e",
+    "systemVersion": "3.3.1",
+    "createdTime": 1725787702850,
+    "modifiedTime": 1733257508870,
+    "lastModifiedBy": "byW8uRmdCnHPlu8H"
+  },
+  "origin": null
+}
