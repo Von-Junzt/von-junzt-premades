@@ -19,34 +19,35 @@ const DUCKING_EFFECT = {
 };
 
 export async function toggleDuckingEffect(tokenDocument) {
-    // effects are applied once for every client if we don't return on all non-gm machines
     if (!game.user.isGM) return;
     
-    // get token and see if effect is allready applied
     const token = canvas.tokens.get(tokenDocument.id);
     const existingProneEffect = token.actor.effects.find(e => e.name === "Prone");
     const existingDuckingEffect = token.actor.effects.find(e => e.name === "Ducking");
 
-    // use CPR Sidebar effect if it exists, otherwise fallback to the default effect
     let effectData = chrisPremades.utils.effectUtils.getSidebarEffectData("Ducking") || DUCKING_EFFECT;
 
-    // check if token is ducking, if yes, add effect if not existing already
     if (token.document.flags?.levelsautocover?.ducking) {
-        // if token was prone before, remove prone effect
-        if (existingProneEffect) {
-            await MidiQOL.socket().executeAsGM("removeEffects", {
-                actorUuid: token.actor.uuid,
-                effects: [existingProneEffect.id]
-            });
-        }
         if (!existingDuckingEffect) {
-            await MidiQOL.socket().executeAsGM("createEffects", {
+            // Batch the updates into a single operation
+            const updates = [];
+
+            if (existingProneEffect) {
+                updates.push(MidiQOL.socket().executeAsGM("removeEffects", {
+                    actorUuid: token.actor.uuid,
+                    effects: [existingProneEffect.id]
+                }));
+            }
+
+            updates.push(MidiQOL.socket().executeAsGM("createEffects", {
                 actorUuid: token.actor.uuid,
                 effects: [effectData]
-            });
+            }));
+
+            // Execute all updates at once
+            await Promise.all(updates);
         }
     } else {
-        // if token is not ducking, remove effect if present
         if(existingDuckingEffect) {
             await MidiQOL.socket().executeAsGM("removeEffects", {
                 actorUuid: token.actor.uuid,
