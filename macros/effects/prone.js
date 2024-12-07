@@ -8,7 +8,7 @@ if(token.document.flags?.levelsautocover?.ducking) {
     await token.document.update({"flags.levelsautocover.ducking": false});
 }
 
-const heightToStore = token.document?.flags["wall-height"]?.tokenHeight ?? 5;
+const heightToStore = token.document?.flags["wall-height"]?.tokenHeight ?? WallHeight._defaultTokenHeight;
 if (heightToStore != null) {
     await token.document.update({"flags.storedTokenHeight": heightToStore});
     // Verify storage worked
