@@ -24,6 +24,21 @@ const ARMOR_MODIFIERS = {
         piercing: 1,
         bludgeoning: 0.75
     },
+    'splint': {
+        slashing: 1,
+        piercing: 1.25,
+        bludgeoning: 0.75
+    },
+    'ring': {
+        slashing: 1.25,
+        piercing: 0.75,
+        bludgeoning: 0.85
+    },
+    'padded': {
+        slashing: 0.85,
+        piercing: 0.5,
+        bludgeoning: 1.25
+    },
     'leather': {
         slashing: 1,
         piercing: 0.75,
@@ -45,7 +60,7 @@ export async function updateArmorDR(actor, item) {
     }
 
     // Calculate base DR using actor's AC
-    const level = actor.system.details.level || 1;
+    const level = actor.system.details.level || actor.system.details.cr || 1;
     const multiplier = getLevelMultiplier(level);
 
     // Get armor type modifiers
@@ -58,25 +73,25 @@ export async function updateArmorDR(actor, item) {
         appliedModifiers: modifiers
     });
 
-    // Create effect
+    // Create effect, make the damage reduction at least 1
     const effectData = {
         name: "Armor Damage Reduction",
-        icon: "icons/equipment/chest/breastplate-cuirass-steel-blue.webp",
+        icon: "icons/equipment/chest/breastplate-gorget-steel-purple.webp",
         changes: [
             {
                 key: "system.traits.dm.amount.slashing",
                 mode: 2,
-                value: `-(floor(((@attributes.ac.value - 10) * ${multiplier}) * ${modifiers.slashing}))`
+                value: `-(max(1, floor(((@attributes.ac.value - 10) * ${multiplier}) * ${modifiers.slashing})))`
             },
             {
                 key: "system.traits.dm.amount.piercing",
                 mode: 2,
-                value: `-(floor(((@attributes.ac.value - 10) * ${multiplier}) * ${modifiers.piercing}))`
+                value: `-(max(1, floor(((@attributes.ac.value - 10) * ${multiplier}) * ${modifiers.piercing})))`
             },
             {
                 key: "system.traits.dm.amount.bludgeoning",
                 mode: 2,
-                value: `-(floor(((@attributes.ac.value - 10) * ${multiplier}) * ${modifiers.bludgeoning}))`
+                value: `-(max(1, floor(((@attributes.ac.value - 10) * ${multiplier}) * ${modifiers.bludgeoning})))`
             }
         ]
     };
@@ -104,11 +119,11 @@ function getArmorType(armor) {
     console.log({
         armorName: name,
         baseItem: baseItem,
-        matchedType: armorTypes.find(type => name.includes(type) || baseItem?.includes(type))
+        matchedType: Object.keys(ARMOR_MODIFIERS).find(type => name.includes(type) || baseItem?.includes(type))
     });
 
     // Check both name and baseItem
-    return armorTypes.find(type =>
+    return Object.keys(ARMOR_MODIFIERS).find(type =>
         name.includes(type) || baseItem?.includes(type)
     ) || null;
 }
