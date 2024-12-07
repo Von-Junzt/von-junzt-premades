@@ -46,18 +46,23 @@ const ARMOR_MODIFIERS = {
     }
 };
 
-export async function updateArmorDR(actor, item) {
-    // if not gm, return
-    if (!game.user.isGM) return;
-
-    // If there is an existing DR effect, delete it
-    const existingEffect = actor.effects.filter(e => e.name === "Armor Damage Reduction")[0];
+async function removeArmorEffect(actor) {
+    const existingEffect = actor.effects.find(e => e.name === "Armor Damage Reduction");
     if (existingEffect) {
-        MidiQOL.socket().executeAsGM("removeEffects", {
+        await MidiQOL.socket().executeAsGM("removeEffects", {
             actorUuid: actor.uuid,
             effects: [existingEffect.id]
-        })
+        });
     }
+}
+
+export async function removeArmorDR(actor) {
+    await removeArmorEffect(actor);
+}
+
+export async function updateArmorDR(actor, item) {
+    // If there is an existing DR effect, delete it
+    await removeArmorEffect(actor);
 
     // Calculate base DR using actor's AC
     const level = actor.system.details.level || actor.system.details.cr || 1;
