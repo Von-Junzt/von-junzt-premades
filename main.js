@@ -9,15 +9,18 @@ Hooks.on("updateToken", toggleDuckingEffect);
 Hooks.on('updateItem', async (item, changes, options, userId) => {
     if (!game.user.isGM) return;
 
-    const isValidArmor = item.type === "equipment"
-        && item.system?.isArmor
-        && item.system.type.label.toLowerCase().includes('armor')
-        && !item.system.type.baseItem.includes('shield');
+    // Check if this is an armor item being equipped/unequipped
+    const isArmorItem = item.system.type.label.toLowerCase().includes('armor');
+    const isEquippedArmor = item.parent.system.attributes.ac?.equippedArmor;
 
-    if (isValidArmor && item.system.equipped) {
-        await updateArmorDR(item.parent, item);
-    } else if (isValidArmor && !item.system.equipped) {
-        await removeArmorDR(item.parent);
+    if (isArmorItem) {
+        if (isEquippedArmor) {
+            // Armor is being equipped or updated
+            await updateArmorDR(item.parent, item);
+        } else {
+            // Armor is being unequipped
+            await removeArmorDR(item.parent);
+        }
     }
 });
 
