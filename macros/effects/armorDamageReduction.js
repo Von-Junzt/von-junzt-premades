@@ -47,7 +47,8 @@ const ARMOR_MODIFIERS = {
 };
 
 async function removeArmorEffect(actor) {
-    const existingEffect = actor.effects.find(e => e.name === "Armor Damage Reduction");
+    const effects = actor.effects;
+    const existingEffect = effects.find(e => e.name === "Armor Damage Reduction");
     if (existingEffect) {
         await MidiQOL.socket().executeAsGM("removeEffects", {
             actorUuid: actor.uuid,
@@ -108,27 +109,22 @@ export async function updateArmorDR(actor, item) {
 }
 
 function getLevelMultiplier(level) {
-    if (level <= 4) return LEVEL_MULTIPLIERS['1-4'];
-    if (level <= 8) return LEVEL_MULTIPLIERS['5-8'];
-    if (level <= 12) return LEVEL_MULTIPLIERS['9-12'];
-    if (level <= 16) return LEVEL_MULTIPLIERS['13-16'];
-    return LEVEL_MULTIPLIERS['17-20'];
+    if (level > 16) return LEVEL_MULTIPLIERS['17-20'];
+    if (level > 12) return LEVEL_MULTIPLIERS['13-16'];
+    if (level > 8) return LEVEL_MULTIPLIERS['9-12'];
+    if (level > 4) return LEVEL_MULTIPLIERS['5-8'];
+    return LEVEL_MULTIPLIERS['1-4'];
 }
 
 function getArmorType(armor) {
-    const armorTypes = ['plate', 'chain', 'scale', 'leather'];
     const name = armor.name.toLowerCase();
-    const baseItem = armor.system?.type?.baseItem?.toLowerCase();
+    const baseItem = armor.system?.type?.baseItem?.toLowerCase() || '';
 
-    // Debugging output
-    console.log({
-        armorName: name,
-        baseItem: baseItem,
-        matchedType: Object.keys(ARMOR_MODIFIERS).find(type => name.includes(type) || baseItem?.includes(type))
-    });
-
-    // Check both name and baseItem
-    return Object.keys(ARMOR_MODIFIERS).find(type =>
-        name.includes(type) || baseItem?.includes(type)
-    ) || null;
+    // Direct lookup instead of using find()
+    for (const type of Object.keys(ARMOR_MODIFIERS)) {
+        if (name.includes(type) || baseItem.includes(type)) {
+            return type;
+        }
+    }
+    return null;
 }
