@@ -6,20 +6,17 @@ import {removeArmorDR, updateArmorDR} from "./macros/effects/armorDamageReductio
 Hooks.on("updateToken", toggleDuckingEffect);
 
 // set up a hook to listen for item updates
-Hooks.on('updateItem', async (item, changes, options, userId) => {
+Hooks.on('preUpdateItem', async (item, changes, options, userId) => {
     if (!game.user.isGM) return;
 
-    // Check if this is an armor item being equipped/unequipped
-    const isArmorItem = item.system.type?.label?.toLowerCase().includes('armor');
-    const isEquippedArmor = item.parent.system.attributes.ac?.equippedArmor;
-
-    if (isArmorItem) {
-        if (isEquippedArmor) {
-            // Armor is being equipped or updated
-            await updateArmorDR(item.parent, item);
-        } else {
-            // Armor is being unequipped
-            await removeArmorDR(item.parent);
+    if (changes.system?.equipped !== undefined) {
+        const isArmorItem = item?.system.type?.label?.toLowerCase().includes('armor');
+        if (isArmorItem) {
+            if (changes.system.equipped) {
+                await updateArmorDR(item.parent, item);
+            } else {
+                await removeArmorDR(item.parent);
+            }
         }
     }
 });
