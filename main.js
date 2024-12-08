@@ -10,7 +10,7 @@ Hooks.on('updateItem', async (item, changes, options, userId) => {
     if (!game.user.isGM) return;
 
     // Check if this is an armor item being equipped/unequipped
-    const isArmorItem = item.system.type.label.toLowerCase().includes('armor');
+    const isArmorItem = item.system.type?.label?.toLowerCase().includes('armor');
     const isEquippedArmor = item.parent.system.attributes.ac?.equippedArmor;
 
     if (isArmorItem) {
