@@ -128,3 +128,12 @@ function getArmorType(armor) {
     }
     return null;
 }
+
+async function refreshAllArmorDR() {
+    for (let actor of game.actors) {
+        const armor = actor.items.find(i => i.type === "equipment" && i.system.equipped);
+        if (armor) {
+            await updateArmorDR(actor, armor);
+        }
+    }
+}
