@@ -10,27 +10,32 @@ const LEVEL_MULTIPLIERS = {
 // Armor type modifiers
 const ARMOR_MODIFIERS = {
     'plate': {
-        slashing: 1,
-        piercing: 1.5,
-        bludgeoning: 0.75
-    },
-    'chain': {
-        slashing: 1,
-        piercing: 0.75,
+        slashing: 1.25,
+        piercing: 1.25,
         bludgeoning: 1
     },
-    'scale': {
-        slashing: 1.25,
-        piercing: 1,
-        bludgeoning: 0.75
-    },
     'splint': {
+        slashing: 1,
+        piercing: 0.75,
+        bludgeoning: 1.25
+    },
+    'scale': {
         slashing: 1,
         piercing: 1.25,
         bludgeoning: 0.75
     },
+    'chain': {
+        slashing: 1.25,
+        piercing: 0.75,
+        bludgeoning: 1
+    },
     'ring': {
         slashing: 1.25,
+        piercing: 0.75,
+        bludgeoning: 0.85
+    },
+    'leather': {
+        slashing: 1,
         piercing: 0.75,
         bludgeoning: 0.85
     },
@@ -38,11 +43,6 @@ const ARMOR_MODIFIERS = {
         slashing: 0.85,
         piercing: 0.5,
         bludgeoning: 1.25
-    },
-    'leather': {
-        slashing: 1,
-        piercing: 0.75,
-        bludgeoning: 1
     }
 };
 
