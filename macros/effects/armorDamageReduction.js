@@ -2,8 +2,8 @@
 const LEVEL_MULTIPLIERS = {
     '1-4': 0.15,
     '5-8': 0.35,
-    '9-12': 0.45,
-    '13-16': 0.65,
+    '9-12': 0.55,
+    '13-16': 0.75,
     '17-20': 1
 };
 
@@ -82,7 +82,7 @@ export async function updateArmorDR(actor, item) {
     // Create effect, make the damage reduction at least 1
     const effectData = {
         name: "Armor Damage Reduction",
-        icon: "icons/equipment/chest/breastplate-gorget-steel-purple.webp",
+        icon: item.img,
         changes: [
             {
                 key: "system.traits.dm.amount.slashing",
