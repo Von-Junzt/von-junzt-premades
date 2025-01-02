@@ -1,102 +1,115 @@
-if(!macroItem.system.equipped) {
-    ui.notifications.warn("You need to equip your lightsource");
-    return;
-}
-
-let questionText = "";
-let contentText = "";
-let lanternStatus = actor.effects.find(e => e.name === macroItem.name)?.disabled;
-
-function generateContentText(questionText) {
-    return `
-        <div class="gps-dialog-container">
-            <div class="gps-dialog-section">
-                <div class="gps-dialog-content">
-                    <div>
-                        <div class="gps-dialog-flex">
-                            <p class="gps-dialog-paragraph">` + questionText + `</p>
-                            <div id="image-container" class="gps-dialog-image-container">
-                                <img src="${macroItem.img}" class="gps-dialog-image">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-async function updateLantern() {
-    if (args[0].macroPass === "preApplyDynamicEffects") {
-        if (lanternStatus !== undefined) {
-            questionText = "Would you like to turn your lantern on or off?";
-            contentText = generateContentText(questionText);
-            await showLanternDialog("Toggle Lantern", "Turn on/off", toggleLantern);
-        } else if (macroItem.system.uses.value > 0) {
-            questionText = "Would you like to light your lantern?";
-            contentText = generateContentText(questionText);
-            await showLanternDialog("Light Lantern", "Light", lightLantern);
-        } else {
-            questionText = "Would you like to refill your lantern?";
-            contentText = generateContentText(questionText);
-            await showLanternDialog("Refill Lantern", "Refill", refillLantern);
-        }
-    }
-}
-
-async function showLanternDialog(title, buttonLabel, callback) {
-    await foundry.applications.api.DialogV2.wait({
-        window: { title: 'Lantern' },
-        content: contentText,
-        buttons: [{
-            action: title,
-            label: buttonLabel,
-            callback: async (event, button, dialog) => {
-                await callback();
-            }
-        }],
-        close: async (event, dialog) => {
-            return;
+/**
+ * This script is used to create a new effect for the lantern item that will be used to toggle the lantern's 'hooded' light on and off.
+ */
+const effectDataHoodedLantern = {
+    "name": "Hooded Lantern",
+    "flags": {},
+    "img": "icons/sundries/lights/lantern-steel.webp",
+    "type": "base",
+    "system": {},
+    "changes": [
+        {
+            "key": "ATL.light.dim",
+            "mode": 5,
+            "value": "4",
+            "priority": 50
         },
-        rejectClose: false
+        {
+            "key": "ATL.light.bright",
+            "mode": 5,
+            "value": "2",
+            "priority": 50
+        },
+        {
+            "key": "ATL.light.color",
+            "mode": 5,
+            "value": "#f98026",
+            "priority": 50
+        },
+        {
+            "key": "ATL.light.alpha",
+            "mode": 5,
+            "value": "0.2",
+            "priority": 50
+        },
+        {
+            "key": "ATL.light.animation",
+            "mode": 5,
+            "value": "{\"type\": \"lantern\",\"speed\": 1,\"intensity\": 1}",
+            "priority": 50
+        }
+    ],
+    "duration": {
+        "startTime": null,
+        "seconds": 21600,
+        "combat": null,
+        "rounds": null,
+        "turns": null,
+        "startRound": null,
+        "startTurn": null
+    },
+    "description": "<p>Adds Hooded Lantern light for 6 hours (requires ATL)</p>",
+};
+const effectDataLantern = {
+    "name": "Lantern",
+    "flags": {},
+    "img": "icons/sundries/lights/lantern-iron-yellow.webp",
+    "changes": [
+    {
+        "key": "ATL.light.dim",
+        "mode": 5,
+        "value": "60",
+        "priority": 50
+    },
+    {
+        "key": "ATL.light.bright",
+        "mode": 5,
+        "value": "30",
+        "priority": 50
+    },
+    {
+        "key": "ATL.light.color",
+        "mode": 5,
+        "value": "#f98026",
+        "priority": 50
+    },
+    {
+        "key": "ATL.light.alpha",
+        "mode": 5,
+        "value": "0.4",
+        "priority": 50
+    },
+    {
+        "key": "ATL.light.animation",
+        "mode": 5,
+        "value": "{\"type\": \"lantern\",\"speed\": 1,\"intensity\": 1}",
+        "priority": 50
+    }
+],
+    "duration": {
+    "startTime": null,
+        "seconds": 21600,
+        "combat": null,
+        "rounds": null,
+        "turns": null,
+        "startRound": null,
+        "startTurn": null
+},
+    "description": "<p>Adds Lantern light for 6 hours (requires ATL)</p>"
+};
+
+// search for existing lantern effects
+let hoodedLanternEffects = actor.effects.filter(e => e.name === "Hooded Lantern");
+
+// if hooded lantern effect exists, lantern is lit and hood can be raised
+if(hoodedLanternEffects.length >= 1) {
+    ui.notifications.warn("Raising the Lanterns hood.");
+    hoodedLanternEffects.forEach(effect => {effect.delete()});
+} else { // if hooded lantern effect does not exist, hood can be lowered
+    ui.notifications.warn("Lowering the Lanterns hood.");
+    await MidiQOL.socket().executeAsGM("createEffects", {
+        actorUuid: actor.uuid,
+        effects: [effectDataHoodedLantern]
     });
 }
 
-async function lightLantern() {
-
-    let effectData = chrisPremades.utils.effectUtils.getSidebarEffectData(macroItem.name);
-    await chrisPremades.utils.effectUtils.createEffect(actor, effectData);
-    let remainingUses = macroItem.system.uses.value - 1;
-    await macroItem.update({ "system.uses.value": remainingUses });
-
-}
-
-async function refillLantern() {
-    if(actor.items.find(i => i.name === "Oil Flask")) {
-        let oilFlask = actor.items.find(i => i.name === "Oil Flask");
-        let oilFlasksOwned = oilFlask.system.quantity;
-        let remainingOilFlasks = oilFlasksOwned - 1;
-        let remainingLanternUses = macroItem.system.uses.value + 1;
-        if(oilFlasksOwned > 0) {
-            await oilFlask.update({ "system.quantity": remainingOilFlasks });
-            await macroItem.update({ "system.uses.value": remainingLanternUses });
-            (remainingOilFlasks === 0) ? oilFlask.delete() : null;
-            ui.notifications.info("You have refilled your lantern.");
-        }
-    }  else {
-        ui.notifications.warn("You do not have any oil left.");
-    }
-}
-
-async function toggleLantern() {
-    let lanternEffect = actor.effects.find(e => e.name === macroItem.name);
-    if(lanternEffect.disabled) {
-        await lanternEffect.update({ disabled: false });
-        ui.notifications.info("You have turned on your lantern.");
-    } else {
-        await lanternEffect.update({ disabled: true });
-        ui.notifications.info("You have turned off your lantern.");
-    }
-}
-
-updateLantern();
