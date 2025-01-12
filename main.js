@@ -23,16 +23,12 @@ Hooks.on('preUpdateItem', async (item, changes, options, userId) => {
 
         if (isWeaponItem) {
             if (changes.system.equipped) {
-                console.log('Updating weapon initiative modifier');
+                // console.log('Updating weapon initiative modifier');
                 await updateWeaponInitiativeModifier(item.parent, item);
             } else {
-                console.log('Removing weapon initiative modifier');
+                // console.log('Removing weapon initiative modifier');
                 await removeWeaponInitiativeModifier(item.parent, item);
             }
         }
     }
 });
-
-// NOT NEEDED ATM: import wyrmbane recharge script and set up a hook to listen for the rest event
-// import {rechargeWyrmbane} from "./macros/items/rechargeWyrmbane.js";
-// Hooks.on("dnd5e.restCompleted", rechargeWyrmbane);
