@@ -68,17 +68,17 @@ async function findWeapons(actor) {
         i.type === "weapon" &&
         i.system.equipped
     );
-    console.log(actor);
-    console.log('findWeapon result:', equippedWeapons);
+    // console.log(actor);
+    // console.log('findWeapon result:', equippedWeapons);
     return equippedWeapons;
 }
 
 export const removeWeaponInitiativeModifier = debounce(async (actor, item) => {
     let equippedWeapons = await findWeapons(actor);
-    console.log('Removing unequipped weapon item:', item);
+    // console.log('Removing unequipped weapon item:', item);
     equippedWeapons = await equippedWeapons.filter(weapon => weapon.id !== item.id);
     if(equippedWeapons.length > 0) {
-        console.log('Actor still has weapons equipped:', equippedWeapons);
+        // console.log('Actor still has weapons equipped:', equippedWeapons);
         await updateWeaponInitiativeModifier(actor, undefined, equippedWeapons);
     } else {
         console.log('After removal, actor has no weapons equipped, removing effect');
@@ -98,11 +98,11 @@ export const updateWeaponInitiativeModifier = debounce(async (actor, item, weapo
 
     // add item if not undefined or already equipped
     if (item && !equippedWeapons.some(weapon => weapon.id === item.id)) {
-        console.log('Changed weapon item: ', item);
+        // console.log('Changed weapon item: ', item);
         equippedWeapons = [...equippedWeapons, item];
     }
 
-    console.log('updateWeaponInitiativeModifier equippedWeapons:', equippedWeapons);
+    // console.log('updateWeaponInitiativeModifier equippedWeapons:', equippedWeapons);
 
     if (equippedWeapons.length > 1) {
         const totalModifier = equippedWeapons.reduce((sum, weapon) => {
@@ -150,6 +150,6 @@ export const updateWeaponInitiativeModifier = debounce(async (actor, item, weapo
 function weaponInitiativeModifierExists(actor) {
     const effects = actor.effects;
     const existingEffect = effects.find(e => e.name === "Weapon Initiative Modifier");
-    console.log('Existing effect:', existingEffect);
+    // console.log('Existing effect:', existingEffect);
     return existingEffect || null;
 }
