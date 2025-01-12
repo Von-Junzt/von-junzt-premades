@@ -1,5 +1,5 @@
 /**
- * This script adds a modifier to the actor's initiative based on their weapon uses. The heavier the weapon, the more initiative is deduced.
+ * This script adds a modifier to the actor's initiative based on their used weapon types. The heavier the weapon, the more initiative is deduced.
  */
 
 // Debounce implementation to handle rapid updates
@@ -105,13 +105,13 @@ export const updateWeaponInitiativeModifier = debounce(async (actor, item, weapo
     // console.log('updateWeaponInitiativeModifier equippedWeapons:', equippedWeapons);
 
     if (equippedWeapons.length > 1) {
-        const totalModifier = equippedWeapons.reduce((sum, weapon) => {
+        // Find the worst (lowest) modifier among equipped weapons
+        finalModifier = equippedWeapons.reduce((worstMod, weapon) => {
             const modifier = WEAPON_MODIFIERS[weapon.system.type.baseItem] ?? 0;
             console.log(`Dual-wield: ${weapon.name} (${weapon.system.type.baseItem}) -> ${modifier}`);
-            return sum + modifier;
-        }, 0);
-        finalModifier = totalModifier;
-        console.log(`Final dual-wield modifier: ${finalModifier}`);
+            return Math.min(worstMod, modifier);
+        }, Infinity);
+        console.log(`Final dual-wield worst modifier: ${finalModifier}`);
     } else {
         finalModifier = WEAPON_MODIFIERS[equippedWeapons[0].system.type.baseItem] ?? 0;
         console.log(`Single weapon: ${equippedWeapons[0].name} (${equippedWeapons[0].system.type.baseItem}) -> ${finalModifier}`);
