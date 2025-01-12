@@ -2,6 +2,19 @@
  * This script adds a modifier to the actor's initiative based on their weapon uses. The heavier the weapon, the more initiative is deduced.
  */
 
+// Debounce implementation to handle rapid updates
+const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+};
+
 // Constants for weapon categories and their initiative modifiers
 const WEAPON_MODIFIERS = {
     // Simple Melee
@@ -51,7 +64,6 @@ const WEAPON_MODIFIERS = {
 };
 
 async function findWeapons(actor) {
-    // check if there is a weapon equipped, if yes, return the weapon
     const equippedWeapons = await actor.items.filter(i =>
         i.type === "weapon" &&
         i.system.equipped
@@ -61,13 +73,13 @@ async function findWeapons(actor) {
     return equippedWeapons;
 }
 
-export async function removeWeaponInitiativeModifier(actor, item) {
+export const removeWeaponInitiativeModifier = debounce(async (actor, item) => {
     let equippedWeapons = await findWeapons(actor);
-    console.log('Removing uneqipped weapon item:', item);
+    console.log('Removing unequipped weapon item:', item);
     equippedWeapons = await equippedWeapons.filter(weapon => weapon.id !== item.id);
     if(equippedWeapons.length > 0) {
         console.log('Actor still has weapons equipped:', equippedWeapons);
-        await updateWeaponInitiativeModifier(actor, item, equippedWeapons);
+        await updateWeaponInitiativeModifier(actor, undefined, equippedWeapons);
     } else {
         console.log('After removal, actor has no weapons equipped, removing effect');
         const existingEffect = weaponInitiativeModifierExists(actor);
@@ -78,39 +90,33 @@ export async function removeWeaponInitiativeModifier(actor, item) {
             });
         }
     }
-}
+}, 100);
 
-export async function updateWeaponInitiativeModifier(actor, item, weaponArray) {
+export const updateWeaponInitiativeModifier = debounce(async (actor, item, weaponArray) => {
     let finalModifier;
-    let equippedWeapons = weaponArray;
+    let equippedWeapons = weaponArray || await findWeapons(actor);
 
-    if(!weaponArray) {
-        // find the weapon equipped and add the argument item to the list of equipped weapons, because we use preUpdateItem hook
-        equippedWeapons = await findWeapons(actor);
-    }
-
-    // If we have an item being updated, add it to consideration
-    if (item) {
+    // add item if not undefined or already equipped
+    if (item && !equippedWeapons.some(weapon => weapon.id === item.id)) {
         console.log('Changed weapon item: ', item);
         equippedWeapons = [...equippedWeapons, item];
     }
+
     console.log('updateWeaponInitiativeModifier equippedWeapons:', equippedWeapons);
+
     if (equippedWeapons.length > 1) {
-        // Multiple weapons: calculate average
         const totalModifier = equippedWeapons.reduce((sum, weapon) => {
             const modifier = WEAPON_MODIFIERS[weapon.system.type.baseItem] ?? 0;
-            console.log(`Dual-wield: ${weapon.name} (${weapon.system.baseItem}) -> ${modifier}`);
+            console.log(`Dual-wield: ${weapon.name} (${weapon.system.type.baseItem}) -> ${modifier}`);
             return sum + modifier;
         }, 0);
-        finalModifier = Math.round(totalModifier / equippedWeapons.length);
+        finalModifier = totalModifier;
         console.log(`Final dual-wield modifier: ${finalModifier}`);
     } else {
-        // Single weapon: use direct modifier
         finalModifier = WEAPON_MODIFIERS[equippedWeapons[0].system.type.baseItem] ?? 0;
         console.log(`Single weapon: ${equippedWeapons[0].name} (${equippedWeapons[0].system.type.baseItem}) -> ${finalModifier}`);
     }
 
-    // create effect
     const effectData = {
         name: "Weapon Initiative Modifier",
         icon: equippedWeapons[0].img,
@@ -122,7 +128,6 @@ export async function updateWeaponInitiativeModifier(actor, item, weaponArray) {
         }]
     };
 
-    // check if effect already exists, if so, update it
     const existingEffect = weaponInitiativeModifierExists(actor);
     if (existingEffect) {
         console.log("Effect exists, updating effect");
@@ -140,7 +145,7 @@ export async function updateWeaponInitiativeModifier(actor, item, weaponArray) {
             effects: [effectData]
         });
     }
-}
+}, 100);
 
 function weaponInitiativeModifierExists(actor) {
     const effects = actor.effects;
