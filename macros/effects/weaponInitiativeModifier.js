@@ -1,8 +1,21 @@
 /**
- * This script adds a modifier to the actor's initiative based on their used weapon types. The heavier the weapon, the more initiative is deduced.
+ * Weapon Initiative Modifier System
+ * Manages dynamic initiative adjustments based on equipped weapon types.
+ * Heavier weapons reduce initiative while lighter weapons improve it.
+ *
+ * Key features:
+ * - Automatic updates on weapon equip/unequip
+ * - Handles single and dual-wielding scenarios
+ * - Uses debounced updates to prevent race conditions, when multiple updates are triggered rapidly
+ * - Integrates with MidiQOL for effect management
  */
 
-// Debounce implementation to handle rapid updates
+/**
+ * Debounce function to limit function calls
+ * @param func - The function to debounce
+ * @param wait - The delay in milliseconds
+ * @returns {(function(...[*]): void)|*}
+ */
 const debounce = (func, wait) => {
     let timeout;
     return function executedFunction(...args) {
@@ -15,7 +28,12 @@ const debounce = (func, wait) => {
     };
 };
 
-// Constants for weapon categories and their initiative modifiers
+/**
+ * Initiative modifiers for different weapon types
+ * Positive values = faster weapons
+ * Negative values = slower weapons
+ * Range: -2 (slowest) to +2 (fastest)
+ */
 const WEAPON_MODIFIERS = {
     // Simple Melee
     'club': 1,
@@ -63,6 +81,11 @@ const WEAPON_MODIFIERS = {
     'net': 0
 };
 
+/**
+ * Finds all equipped weapons on an actor
+ * @param {Actor} actor - The actor to check for weapons
+ * @returns {Array<Item>} Array of equipped weapon items
+ */
 async function findWeapons(actor) {
     const equippedWeapons = await actor.items.filter(i =>
         i.type === "weapon" &&
@@ -73,6 +96,11 @@ async function findWeapons(actor) {
     return equippedWeapons;
 }
 
+/**
+ * Removes the initiative modifier effect from an actor, if weapon is unequipped
+ * @param {Actor} actor - The actor to remove the effect from
+ * @param {Item} item - The weapon item that was unequipped
+ */
 export const removeWeaponInitiativeModifier = debounce(async (actor, item) => {
     let equippedWeapons = await findWeapons(actor);
     // console.log('Removing unequipped weapon item:', item);
@@ -92,6 +120,12 @@ export const removeWeaponInitiativeModifier = debounce(async (actor, item) => {
     }
 }, 100);
 
+/**
+ * Updates the initiative modifier effect on an actor based on their equipped weapons
+ * @param {Actor} actor - The actor to update the effect for
+ * @param {Item} item - The weapon item that has changes
+ * @param {Array<Item>} weaponArray - The array of weapon items to consider
+ */
 export const updateWeaponInitiativeModifier = debounce(async (actor, item, weaponArray) => {
     let finalModifier;
     let equippedWeapons = weaponArray || await findWeapons(actor);
@@ -101,7 +135,6 @@ export const updateWeaponInitiativeModifier = debounce(async (actor, item, weapo
         // console.log('Changed weapon item: ', item);
         equippedWeapons = [...equippedWeapons, item];
     }
-
     // console.log('updateWeaponInitiativeModifier equippedWeapons:', equippedWeapons);
 
     if (equippedWeapons.length > 1) {
@@ -117,6 +150,8 @@ export const updateWeaponInitiativeModifier = debounce(async (actor, item, weapo
         console.log(`Single weapon: ${equippedWeapons[0].name} (${equippedWeapons[0].system.type.baseItem}) -> ${finalModifier}`);
     }
 
+    // Create effect data with weapon initiative modifier
+    // Uses mode 2 for additive stacking
     const effectData = {
         name: "Weapon Initiative Modifier",
         icon: equippedWeapons[0].img,
@@ -147,6 +182,11 @@ export const updateWeaponInitiativeModifier = debounce(async (actor, item, weapo
     }
 }, 100);
 
+/**
+ * Checks if the actor has a weapon initiative modifier effect
+ * @param actor
+ * @returns {effect|null}
+ */
 function weaponInitiativeModifierExists(actor) {
     const effects = actor.effects;
     const existingEffect = effects.find(e => e.name === "Weapon Initiative Modifier");
