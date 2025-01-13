@@ -1,7 +1,20 @@
 import {toggleDuckingEffect} from "./macros/effects/toggleDuckingEffect.js";
-import {removeArmorDR, updateArmorDR} from "./macros/effects/armorDamageReduction.js";
+import {removeArmorEffect, updateArmorDR} from "./macros/effects/armorDamageReduction.js";
 import {removeWeaponInitiativeModifier, updateWeaponInitiativeModifier} from "./macros/effects/weaponInitiativeModifier.js";
+import {setupAlternatingInitiative} from "./macros/combat/alternatingInitiative.js";
 
+// hook into the preUpdateCombat event to set up alternating initiative
+Hooks.on("preUpdateCombat", async (combat, changes, options, userId) => {
+    if (!game.user.isGM) return;
+
+    // Only proceed when combat is starting (round 0 -> round 1)
+    if (combat.round === 0 && changes.round === 1) {
+        // Roll initiatives first
+        await combat.rollAll();
+        // Then set up alternating order
+        await setupAlternatingInitiative(combat);
+    }
+});
 
 // set up a hook to listen for token ducking
 Hooks.on("updateToken", toggleDuckingEffect);
@@ -17,7 +30,7 @@ Hooks.on('preUpdateItem', async (item, changes, options, userId) => {
             if (changes.system.equipped) {
                 await updateArmorDR(item.parent, item);
             } else {
-                await removeArmorDR(item.parent);
+                await removeArmorEffect(item.parent, item);
             }
         }
 
