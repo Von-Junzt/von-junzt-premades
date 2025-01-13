@@ -46,25 +46,46 @@ const ARMOR_MODIFIERS = {
     }
 };
 
-async function removeArmorEffect(actor) {
+export async function removeArmorEffect(actor, item) {
     const effects = actor.effects;
     const existingEffect = effects.find(e => e.name === "Armor Damage Reduction");
     if (existingEffect) {
-        await MidiQOL.socket().executeAsGM("removeEffects", {
+        const effectData = {
+            name: "Armor Damage Reduction",
+            icon: item.img,
+            changes: [
+                {
+                    key: "system.traits.dm.amount.slashing",
+                    mode: 2,
+                    value: 0
+                },
+                {
+                    key: "system.traits.dm.amount.piercing",
+                    mode: 2,
+                    value: 0
+                },
+                {
+                    key: "system.traits.dm.amount.bludgeoning",
+                    mode: 2,
+                    value: 0
+                }
+            ]
+        };
+
+        console.log("Armor damage reduction effect exists, updating effect");
+        await MidiQOL.socket().executeAsGM("updateEffects", {
             actorUuid: actor.uuid,
-            effects: [existingEffect.id]
+            updates: [{
+                _id: existingEffect.id,
+                ...effectData
+            }]
         });
+    } else {
+        console.log('No armor damage reduction effect found, no need to do anything.');
     }
 }
 
-export async function removeArmorDR(actor) {
-    await removeArmorEffect(actor);
-}
-
 export async function updateArmorDR(actor, item) {
-    // If there is an existing DR effect, delete it
-    await removeArmorEffect(actor);
-
     // Calculate base DR using actor's AC
     const level = actor.system.details.level || actor.system.details.cr || 1;
     const multiplier = getLevelMultiplier(level);
@@ -102,10 +123,23 @@ export async function updateArmorDR(actor, item) {
         ]
     };
 
-    await MidiQOL.socket().executeAsGM("createEffects", {
-        actorUuid: actor.uuid,
-        effects: [effectData]
-    });
+    const existingEffect = actor.effects.find(e => e.name === "Armor Damage Reduction");
+    if (existingEffect) {
+        console.log("Effect exists, updating effect");
+        await MidiQOL.socket().executeAsGM("updateEffects", {
+            actorUuid: actor.uuid,
+            updates: [{
+                _id: existingEffect.id,
+                ...effectData
+            }]
+        });
+    } else {
+        console.log("No effect exists, creating new effect");
+        await MidiQOL.socket().executeAsGM("createEffects", {
+            actorUuid: actor.uuid,
+            effects: [effectData]
+        });
+    }
 }
 
 function getLevelMultiplier(level) {

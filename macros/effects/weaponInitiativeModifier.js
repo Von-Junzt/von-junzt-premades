@@ -11,22 +11,10 @@
  */
 
 /**
- * Debounce function to limit function calls
- * @param func - The function to debounce
- * @param wait - The delay in milliseconds
- * @returns {(function(...[*]): void)|*}
+ * Time in milliseconds to wait before executing debounced functions
+ * @type {number}
  */
-const debounce = (func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-};
+const DEBOUNCE_WAIT_MS = 100;
 
 /**
  * Initiative modifiers for different weapon types
@@ -82,6 +70,24 @@ const WEAPON_MODIFIERS = {
 };
 
 /**
+ * Debounce function to limit function calls
+ * @param func - The function to debounce
+ * @param wait - The delay in milliseconds
+ * @returns {(function(...[*]): void)|*}
+ */
+const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+};
+
+/**
  * Finds all equipped weapons on an actor
  * @param {Actor} actor - The actor to check for weapons
  * @returns {Array<Item>} Array of equipped weapon items
@@ -97,7 +103,7 @@ async function findWeapons(actor) {
 }
 
 /**
- * Removes the initiative modifier effect from an actor, if weapon is unequipped
+ * Sets the initiative modifier effect keys to 0, if no weapon is equipped
  * @param {Actor} actor - The actor to remove the effect from
  * @param {Item} item - The weapon item that was unequipped
  */
@@ -109,16 +115,33 @@ export const removeWeaponInitiativeModifier = debounce(async (actor, item) => {
         // console.log('Actor still has weapons equipped:', equippedWeapons);
         await updateWeaponInitiativeModifier(actor, undefined, equippedWeapons);
     } else {
-        console.log('After removal, actor has no weapons equipped, removing effect');
+        console.log('Actor has no weapons equipped, setting modifier to 0');
         const existingEffect = weaponInitiativeModifierExists(actor);
         if (existingEffect) {
-            await MidiQOL.socket().executeAsGM("removeEffects", {
-                actorUuid: actor.uuid,
-                effects: [existingEffect.id]
-            });
+            const effectData = {
+                name: "Weapon Initiative Modifier",
+                icon: item.img,
+                changes: [{
+                    key: "system.attributes.init.bonus",
+                    mode: 2,
+                    value: 0,
+                    priority: 20
+                }]
+            };
+
+           console.log("Effect exists, updating effect");
+           await MidiQOL.socket().executeAsGM("updateEffects", {
+               actorUuid: actor.uuid,
+               updates: [{
+                   _id: existingEffect.id,
+                   ...effectData
+               }]
+           });
+       } else {
+            console.log("Effect does not exist, don't need to do anything.");
         }
     }
-}, 100);
+}, DEBOUNCE_WAIT_MS);
 
 /**
  * Updates the initiative modifier effect on an actor based on their equipped weapons
@@ -150,8 +173,7 @@ export const updateWeaponInitiativeModifier = debounce(async (actor, item, weapo
         console.log(`Single weapon: ${equippedWeapons[0].name} (${equippedWeapons[0].system.type.baseItem}) -> ${finalModifier}`);
     }
 
-    // Create effect data with weapon initiative modifier
-    // Uses mode 2 for additive stacking
+    // Create effect data with weapon initiative modifier, uses mode 2 for additive stacking
     const effectData = {
         name: "Weapon Initiative Modifier",
         icon: equippedWeapons[0].img,
@@ -180,7 +202,7 @@ export const updateWeaponInitiativeModifier = debounce(async (actor, item, weapo
             effects: [effectData]
         });
     }
-}, 100);
+}, DEBOUNCE_WAIT_MS);
 
 /**
  * Checks if the actor has a weapon initiative modifier effect
