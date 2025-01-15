@@ -1,6 +1,6 @@
 import {toggleDuckingEffect} from "./macros/effects/toggleDuckingEffect.js";
-import {removeArmorEffect, updateArmorDR} from "./macros/effects/armorDamageReduction.js";
-import {removeWeaponInitiativeModifier, updateWeaponInitiativeModifier} from "./macros/effects/weaponInitiativeModifier.js";
+import {removeArmorEffect, updateArmorDR} from "./macros/combat/armorDamageReduction.js";
+import {removeWeaponInitiativeModifier, updateWeaponInitiativeModifier} from "./macros/combat/weaponInitiativeModifier.js";
 
 
 
