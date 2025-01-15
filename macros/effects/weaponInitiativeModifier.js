@@ -126,7 +126,13 @@ export const removeWeaponInitiativeModifier = debounce(async (actor, item) => {
                     mode: 2,
                     value: 0,
                     priority: 20
-                }]
+                }],
+                flags: {
+                    "chris-premades": {
+                        "noAnimation": true,
+                        "conditions": []
+                    }
+                }
             };
 
            console.log("Effect exists, updating effect");

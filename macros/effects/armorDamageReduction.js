@@ -120,7 +120,13 @@ export async function updateArmorDR(actor, item) {
                 mode: 2,
                 value: `-(max(1, floor(((@attributes.ac.value - 10) * ${multiplier}) * ${modifiers.bludgeoning})))`
             }
-        ]
+        ],
+        flags: {
+            "chris-premades": {
+                "noAnimation": true,
+                "conditions": []
+            }
+        }
     };
 
     const existingEffect = actor.effects.find(e => e.name === "Armor Damage Reduction");
