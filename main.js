@@ -4,7 +4,7 @@ import {removeWeaponInitiativeModifier, updateWeaponInitiativeModifier} from "./
 
 
 
-// hook into the preUpdateCombat event to set up alternating initiative
+// hook into the preUpdateCombat event to set up alternating initiative, rolls initiative for all combatants hat have not yet rolled
 Hooks.on("preUpdateCombat", async (combat, changes, options, userId) => {
     if (!game.user.isGM) return;
 
@@ -12,6 +12,30 @@ Hooks.on("preUpdateCombat", async (combat, changes, options, userId) => {
     if (combat.round === 0 && changes.round === 1) {
         // Roll initiatives first
         await combat.rollAll();
+    }
+});
+
+// Fires when a token is created, checks if the actor has any equipped items and updates the initiative modifier effect and the armor damage reduction effect
+Hooks.on("createToken", async (tokenDocument, options, userId) => {
+    if (!game.user.isGM) return;
+
+    const actor = tokenDocument.actor;
+    if (!actor) return;
+
+    // Check all equipped items
+    const equippedItems = actor.items.filter(item => item.system.equipped);
+
+    for (const item of equippedItems) {
+        const isArmorItem = item?.system.type?.label?.toLowerCase().includes('armor');
+        const isWeaponItem = item?.type?.toLowerCase().includes('weapon');
+
+        if (isArmorItem) {
+            await updateArmorDR(actor, item);
+        }
+
+        if (isWeaponItem) {
+            await updateWeaponInitiativeModifier(actor, item);
+        }
     }
 });
 
