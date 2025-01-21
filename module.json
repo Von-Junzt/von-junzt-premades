@@ -22,7 +22,7 @@
   "packs": [
     {
       "name": "von-junzt-premades-items",
-      "label": "Items",
+      "label": "Von Junzt Premade Items",
       "path": "packs/von-junzt-premades-items",
       "type": "Item",
       "ownership": {
@@ -31,41 +31,14 @@
       },
       "system": "dnd5e",
       "flags": {}
-    },
-    {
-      "name": "von-junzt-premades-macros",
-      "label": "Macros",
-      "path": "packs/von-junzt-premades-macros",
-      "type": "Macro",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
-      "system": "dnd5e",
-      "flags": {}
-    },
-    {
-      "name": "von-junzt-premades-actors",
-      "label": "Actors",
-      "path": "packs/von-junzt-premades-actors",
-      "type": "Actor",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
-      "system": "dnd5e",
-      "flags": {}
-    }
-  ],
+    }],
   "packFolders": [
     {
       "name": "Von Junzt's Premades",
       "sorting": "m",
       "color": "#3f8230",
       "packs": [
-        "von-junzt-premades-items",
-        "von-junzt-premades-macros",
-        "von-junzt-premades-actors"
+        "von-junzt-premades-items"
       ]
     }
   ],
