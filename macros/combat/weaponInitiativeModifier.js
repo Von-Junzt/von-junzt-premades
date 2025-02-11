@@ -24,51 +24,50 @@ const DEBOUNCE_WAIT_MS = 100;
  */
 const WEAPON_MODIFIERS = {
     // Simple Melee
-    'club': 1,
-    'dagger': 2,
-    'greatclub': -1,
-    'handaxe': 1,
-    'javelin': 0,
-    'lighthammer': 1,
-    'mace': 0,
-    'quarterstaff': 0,
-    'sickle': 1,
-    'spear': 0,
+    'club': 2,              // was 1
+    'dagger': 4,            // was 2
+    'greatclub': -2,        // was -1
+    'handaxe': 2,           // was 1
+    'javelin': 0,           // stays 0
+    'lighthammer': 2,       // was 1
+    'mace': 0,              // stays 0
+    'quarterstaff': 0,      // stays 0
+    'sickle': 2,            // was 1
+    'spear': 0,             // stays 0
 
     // Simple Ranged
-    'lightcrossbow': 0,
-    'dart': 2,
-    'shortbow': 1,
-    'sling': 1,
+    'lightcrossbow': 0,     // stays 0
+    'dart': 4,              // was 2
+    'shortbow': 2,          // was 1
+    'sling': 2,             // was 1
 
     // Martial Melee
-    'battleaxe': 0,
-    'flail': 0,
-    'glaive': -1,
-    'greataxe': -2,
-    'greatsword': -1,
-    'halberd': -1,
-    'lance': -2,
-    'longsword': 0,
-    'maul': -2,
-    'morningstar': -1,
-    'pike': -1,
-    'rapier': 1,
-    'scimitar': 1,
-    'shortsword': 1,
-    'trident': 0,
-    'warpick': 0,
-    'warhammer': 0,
-    'whip': 1,
+    'battleaxe': 0,         // stays 0
+    'flail': 0,             // stays 0
+    'glaive': -2,           // was -1
+    'greataxe': -4,         // was -2
+    'greatsword': -2,       // was -1
+    'halberd': -2,          // was -1
+    'lance': -4,            // was -2
+    'longsword': 0,         // stays 0
+    'maul': -4,             // was -2
+    'morningstar': -2,      // was -1
+    'pike': -2,             // was -1
+    'rapier': 2,            // was 1
+    'scimitar': 2,          // was 1
+    'shortsword': 2,        // was 1
+    'trident': 0,           // stays 0
+    'warpick': 0,           // stays 0
+    'warhammer': 0,         // stays 0
+    'whip': 2,              // was 1
 
     // Martial Ranged
-    'blowgun': 2,
-    'handcrossbow': 1,
-    'heavycrossbow': -2,
-    'longbow': -1,
-    'net': 0
+    'blowgun': 4,           // was 2
+    'handcrossbow': 2,      // was 1
+    'heavycrossbow': -4,    // was -2
+    'longbow': -2,          // was -1
+    'net': 0                // stays 0
 };
-
 /**
  * Debounce function to limit function calls
  * @param func - The function to debounce
