@@ -9,9 +9,59 @@ const LEVEL_MULTIPLIERS = {
 
 // Armor type modifiers
 const ARMOR_MODIFIERS = {
-    'plate': {
+    // Light Armor
+    'padded': {
+        slashing: 0.85,
+        piercing: 0.5,
+        bludgeoning: 1.25
+    },
+    'leather': {
+        slashing: 1,
+        piercing: 0.75,
+        bludgeoning: 0.85
+    },
+    'studded': {
+        slashing: 1.1,
+        piercing: 0.85,
+        bludgeoning: 0.75
+    },
+
+    // Medium Armor
+    'hide': {
+        slashing: 1.1,
+        piercing: 0.85,
+        bludgeoning: 1.1
+    },
+    'chain shirt': {
         slashing: 1.25,
+        piercing: 0.75,
+        bludgeoning: 0.85
+    },
+    'scale': {
+        slashing: 1,
         piercing: 1.25,
+        bludgeoning: 0.75
+    },
+    'breastplate': {
+        slashing: 1,
+        piercing: 1.25,
+        bludgeoning: 1
+    },
+    'half plate': {
+        slashing: 1.15,
+        piercing: 1.15,
+        bludgeoning: 1
+    },
+
+    // Heavy Armor
+    'ring': {
+        slashing: 1.25,
+        piercing: 0.75,
+        bludgeoning: 0.85
+    },
+    'chain': {
+        slashing: 1.25,
+        piercing: 0.75,
         bludgeoning: 1
     },
     'splint': {
@@ -19,30 +69,10 @@ const ARMOR_MODIFIERS = {
         piercing: 0.75,
         bludgeoning: 1.25
     },
-    'scale': {
-        slashing: 1,
+    'plate': {
+        slashing: 1.25,
         piercing: 1.25,
-        bludgeoning: 0.75
-    },
-    'chain': {
-        slashing: 1.25,
-        piercing: 0.75,
         bludgeoning: 1
-    },
-    'ring': {
-        slashing: 1.25,
-        piercing: 0.75,
-        bludgeoning: 0.85
-    },
-    'leather': {
-        slashing: 1,
-        piercing: 0.75,
-        bludgeoning: 0.85
-    },
-    'padded': {
-        slashing: 0.85,
-        piercing: 0.5,
-        bludgeoning: 1.25
     }
 };
 
@@ -157,15 +187,24 @@ function getLevelMultiplier(level) {
 }
 
 function getArmorType(armor) {
-    const name = armor.name.toLowerCase();
+    // Get exact baseItem match first
     const baseItem = armor.system?.type?.baseItem?.toLowerCase() || '';
-
-    // Direct lookup instead of using find()
-    for (const type of Object.keys(ARMOR_MODIFIERS)) {
-        if (name.includes(type) || baseItem.includes(type)) {
-            return type;
-        }
+    if (ARMOR_MODIFIERS[baseItem]) {
+        return baseItem;
     }
+
+    // Fallback to name matching if needed
+    const name = armor.name.toLowerCase();
+    // Check exact matches first
+    for (const type of Object.keys(ARMOR_MODIFIERS)) {
+        if (name === type) return type;
+    }
+
+    // Then check partial matches
+    for (const type of Object.keys(ARMOR_MODIFIERS)) {
+        if (name.includes(type)) return type;
+    }
+
     return null;
 }
 

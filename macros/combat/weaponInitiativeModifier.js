@@ -18,55 +18,63 @@ const DEBOUNCE_WAIT_MS = 100;
 
 /**
  * Initiative modifiers for different weapon types
- * Positive values = faster weapons
- * Negative values = slower weapons
- * Range: -2 (slowest) to +2 (fastest)
+ * This scale follows these principles:
+ * 0: Lightest weapons requiring minimal effort to wield (dagger, dart, whip, blowgun)
+ * -1: Light weapons that maintain good maneuverability
+ * -2: Medium weapons requiring more deliberate handling
+ * -3: Heavy two-handed weapons that impact mobility
+ * -4: Heaviest weapons that significantly impede quick actions
+ * Each weapon's modifier reflects its:
+ * Weight and bulk
+ * Handling requirements
+ * Historical use in combat
+ * Mechanical complexity (for ranged weapons)
  */
 const WEAPON_MODIFIERS = {
     // Simple Melee
-    'club': 2,              // was 1
-    'dagger': 4,            // was 2
-    'greatclub': -2,        // was -1
-    'handaxe': 2,           // was 1
-    'javelin': 0,           // stays 0
-    'lighthammer': 2,       // was 1
-    'mace': 0,              // stays 0
-    'quarterstaff': 0,      // stays 0
-    'sickle': 2,            // was 1
-    'spear': 0,             // stays 0
+    'club': -1,            // Light, one-handed
+    'dagger': 0,           // Fastest weapon, perfect for quick strikes
+    'greatclub': -3,       // Two-handed, unwieldy
+    'handaxe': -1,         // Light throwing weapon
+    'javelin': -1,         // Balanced throwing weapon
+    'lighthammer': -1,     // Light throwing weapon
+    'mace': -2,           // Medium weight, one-handed
+    'quarterstaff': -2,    // Versatile, balanced
+    'sickle': -1,         // Light curved blade
+    'spear': -2,          // Versatile, balanced
 
     // Simple Ranged
-    'lightcrossbow': 0,     // stays 0
-    'dart': 4,              // was 2
-    'shortbow': 2,          // was 1
-    'sling': 2,             // was 1
+    'lightcrossbow': -2,   // Mechanical weapon, some setup time
+    'dart': 0,            // Fastest ranged weapon
+    'shortbow': -1,       // Light bow
+    'sling': -1,          // Light projectile weapon
 
     // Martial Melee
-    'battleaxe': 0,         // stays 0
-    'flail': 0,             // stays 0
-    'glaive': -2,           // was -1
-    'greataxe': -4,         // was -2
-    'greatsword': -2,       // was -1
-    'halberd': -2,          // was -1
-    'lance': -4,            // was -2
-    'longsword': 0,         // stays 0
-    'maul': -4,             // was -2
-    'morningstar': -2,      // was -1
-    'pike': -2,             // was -1
-    'rapier': 2,            // was 1
-    'scimitar': 2,          // was 1
-    'shortsword': 2,        // was 1
-    'trident': 0,           // stays 0
-    'warpick': 0,           // stays 0
-    'warhammer': 0,         // stays 0
-    'whip': 2,              // was 1
+    'battleaxe': -2,      // Medium weight, versatile
+    'flail': -2,          // Medium weight, chain weapon
+    'glaive': -3,         // Heavy reach weapon
+    'greataxe': -4,       // Heaviest category
+    'greatsword': -3,     // Heavy two-handed
+    'halberd': -3,        // Heavy reach weapon
+    'lance': -4,          // Heaviest category, special
+    'longsword': -2,      // Medium weight, versatile
+    'maul': -4,           // Heaviest category
+    'morningstar': -3,    // Heavy spiked weapon
+    'pike': -3,           // Heavy reach weapon
+    'rapier': -1,         // Light thrusting sword
+    'scimitar': -1,       // Light curved sword
+    'shortsword': -1,     // Light sword
+    'trident': -2,        // Medium weight, versatile
+    'warpick': -2,        // Medium weight, one-handed
+    'warhammer': -2,      // Medium weight, versatile
+    'whip': 0,            // Very light, flexible
 
     // Martial Ranged
-    'blowgun': 4,           // was 2
-    'handcrossbow': 2,      // was 1
-    'heavycrossbow': -4,    // was -2
-    'longbow': -2,          // was -1
-    'net': 0                // stays 0
+    'blowgun': 0,         // Lightest ranged weapon
+    'handcrossbow': -1,   // Light mechanical weapon
+    'heavycrossbow': -4,  // Heaviest ranged weapon
+    'longbow': -3,        // Heavy bow
+    'net': -2            // Special throwing weapon
 };
 /**
  * Debounce function to limit function calls
